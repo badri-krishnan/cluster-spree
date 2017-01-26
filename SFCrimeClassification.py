@@ -59,12 +59,25 @@ def knn_model(train, test, crime_dict):
     X_train = train[features]
     Y_train = train['Category']
     X_test = test[features]
+
     knn = KNeighborsClassifier(n_neighbors=5)
     knn.fit(X_train, Y_train)
-    prediction = knn.predict(X_tegst)
+    Y_test_predictions = knn.predict(X_test)
+    print Y_test_predictions
+    predict_dataframe = pd.DataFrame({
+        "Id": test["Id"]
+    })
 
-
-
+    for k,v in crime_dict.items():
+        print k,v
+        predict_dataframe[k] = 0
+    count = 0
+    for prediction in Y_test_predictions:
+        for key,value in crime_dict.items():
+            if(value == prediction):
+                predict_dataframe[key][count] = 1
+        count+=1
+    predict_dataframe.to_csv(path_or_buf="output_data/KNN_Analysis.csv", index=True)
 
 def main():
     training_set = 'input_data/train.csv'
